@@ -1,0 +1,51 @@
+{
+  "name": "auth-task",
+  "version": "1.0.0",
+  "description": "Example Authentication and Task services",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm run build && node build/server.js",
+    "start:dev": "nodemon",
+    "build": "rimraf ./build && tsc",
+    "lint": "eslint . --ext .ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teohrt/auth-task.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/teohrt/auth-task/issues"
+  },
+  "homepage": "https://github.com/teohrt/auth-task#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/node": "^14.0.5",
+    "@types/pg": "^7.14.6",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-json": "^2.1.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.5",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.1.2",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.0.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.9.3"
+  },
+  "dependencies": {
+    "@types/winston": "^2.4.4",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "pg": "^8.5.0",
+    "winston": "^3.3.3"
+  }
+}
