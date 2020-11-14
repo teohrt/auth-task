@@ -1,7 +1,7 @@
 import { Client } from 'pg';
 import { Logger } from 'winston';
 
-interface DBClient {
+export interface DBClient {
   addTask: () => Promise<unknown>;
 }
 

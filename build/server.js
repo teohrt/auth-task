@@ -24,19 +24,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var dotenv = __importStar(require("dotenv"));
-var dbClient_1 = __importDefault(require("./db/dbClient"));
+var index_1 = __importDefault(require("./routes/index"));
 var logger_1 = __importDefault(require("./utilities/logger"));
+var dbClient_1 = __importDefault(require("./db/dbClient"));
 dotenv.config({ path: __dirname + "/../.env" });
 var PORT = 8080 || process.env.PORT;
 var dbClient = dbClient_1.default(logger_1.default);
+var routes = index_1.default(logger_1.default, dbClient);
 var app = express_1.default();
-app.get('/', function (req, res) {
-    res.send('One small step');
-});
-app.get('/add', function (req, res) {
-    dbClient.addTask();
-    res.send('Task added!!');
-});
+app.use(routes);
 app.listen(PORT, function () {
     logger_1.default.info("\uD83D\uDE80 Server ready at http://localhost:" + PORT);
 });
