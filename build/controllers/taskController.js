@@ -36,72 +36,101 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var v1Statuses = ['New', 'Completed'];
 exports.default = (function (logger, dbClient) { return ({
     createTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, status, name, description, ownerId, result, newId;
+        var _a, status, name, description, userId, result, taskId;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    logger.info('Task Controller: Creating task');
+                    logger.info('Task Controller: createTask');
                     _a = req.body, status = _a.status, name = _a.name, description = _a.description;
-                    ownerId = req.user.id;
-                    return [4 /*yield*/, dbClient.createTask(ownerId, status, name, description)];
+                    userId = req.user.id;
+                    // Validate status input
+                    if (!v1Statuses.includes(status)) {
+                        logger.info("User " + userId + " input bad status value: " + status);
+                        res.status(400).send({ inputError: 'Status may only be \'New\' or \'Completed\'' });
+                        return [2 /*return*/];
+                    }
+                    return [4 /*yield*/, dbClient.createTask(userId, status, name, description)];
                 case 1:
                     result = _b.sent();
-                    newId = result.rows[0].id;
-                    res.status(201).send({ taskId: newId });
+                    taskId = result.rows[0].id;
+                    res.status(201).send({ taskId: taskId });
                     return [2 /*return*/];
             }
         });
     }); },
     getAllTasksFromUser: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var ownerId, result, taskArray;
+        var ownerId, result, tasks;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    logger.info('Task Controller: Get All Tasks From User');
+                    logger.info('Task Controller: getAllTasksFromUser');
                     ownerId = req.user.id;
                     return [4 /*yield*/, dbClient.getAllTasksFromUser(ownerId)];
                 case 1:
                     result = _a.sent();
-                    taskArray = result.rows;
-                    res.status(200).send({ tasks: taskArray });
+                    tasks = result.rows;
+                    res.status(200).send({ tasks: tasks });
                     return [2 /*return*/];
             }
         });
     }); },
     getTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var taskId, result, task;
+        var taskId, userId, result, task, taskOwnerId;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    logger.info('Task Controller: Get Task');
+                    logger.info('Task Controller: getTask');
                     taskId = req.params.taskId;
+                    userId = req.user.id;
                     return [4 /*yield*/, dbClient.getTask(Number(taskId))];
                 case 1:
                     result = _a.sent();
                     task = result.rows[0];
-                    res.status(200).send({ task: task });
+                    taskOwnerId = task.owner_id;
+                    if (taskOwnerId === userId) {
+                        res.status(200).send({ task: task });
+                    }
+                    else {
+                        res.status(403).send({ forbiddenError: 'Unable to retrieve task - Differing task owner' });
+                    }
                     return [2 /*return*/];
             }
         });
     }); },
     updateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, status, name, description, taskId;
+        var _a, status, name, description, taskId, userId, result, task, taskOwnerId;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    logger.info('Task Controller: Update Task');
+                    logger.info('Task Controller: updateTask');
                     _a = req.body, status = _a.status, name = _a.name, description = _a.description;
                     taskId = req.params.taskId;
-                    // TODO: Additional validation required: Check that task belongs to user
-                    // TODO: Makes sure status value is acceptable
-                    // TODO: Check if record exists
-                    return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description)];
+                    userId = req.user.id;
+                    // Validate status input
+                    if (!v1Statuses.includes(status)) {
+                        logger.info("User " + userId + " input bad status value: " + status);
+                        res.status(400).send({ inputError: 'Unable to update task - Status may only be \'New\' or \'Completed\'.' });
+                        return [2 /*return*/];
+                    }
+                    return [4 /*yield*/, dbClient.getTask(Number(taskId))];
                 case 1:
-                    // TODO: Additional validation required: Check that task belongs to user
-                    // TODO: Makes sure status value is acceptable
-                    // TODO: Check if record exists
+                    result = _b.sent();
+                    if (result.rowCount < 1) {
+                        logger.info("User " + userId + " requested a non existant task id: " + taskId);
+                        res.status(404).send({ resourceNotFound: 'Unable to update task - Task not found' });
+                        return [2 /*return*/];
+                    }
+                    task = result.rows[0];
+                    taskOwnerId = task.owner_id;
+                    if (taskOwnerId !== userId) {
+                        res.status(403).send({ forbiddenError: 'Unable to update task - Differing task owner' });
+                        return [2 /*return*/];
+                    }
+                    return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description)];
+                case 2:
                     _b.sent();
                     res.status(200).send();
                     return [2 /*return*/];
@@ -109,18 +138,29 @@ exports.default = (function (logger, dbClient) { return ({
         });
     }); },
     deleteTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var taskId;
+        var taskId, userId, result, task, taskOwnerId;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    logger.info('Task Controller: Delete Task');
+                    logger.info('Task Controller: deleteTask');
                     taskId = req.params.taskId;
-                    // TODOL Check if record exists
-                    // TODO: Additional validation required: Check that task belongs to user
-                    return [4 /*yield*/, dbClient.deleteTask(Number(taskId))];
+                    userId = req.user.id;
+                    return [4 /*yield*/, dbClient.getTask(Number(taskId))];
                 case 1:
-                    // TODOL Check if record exists
-                    // TODO: Additional validation required: Check that task belongs to user
+                    result = _a.sent();
+                    if (result.rowCount < 1) {
+                        logger.info("User " + userId + " requested a non existant task id: " + taskId);
+                        res.status(404).send({ resourceNotFound: 'Unable to delete task - Task not found' });
+                        return [2 /*return*/];
+                    }
+                    task = result.rows[0];
+                    taskOwnerId = task.owner_id;
+                    if (taskOwnerId !== userId) {
+                        res.status(403).send({ forbiddenError: 'Unable to delete task - Differing task owner' });
+                        return [2 /*return*/];
+                    }
+                    return [4 /*yield*/, dbClient.deleteTask(Number(taskId))];
+                case 2:
                     _a.sent();
                     res.status(200).send();
                     return [2 /*return*/];
