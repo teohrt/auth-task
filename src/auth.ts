@@ -1,9 +1,9 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import getDBClient from './db/dbClient';
 import getAuthRoutes from './routes/auth/index';
 import logger from './utilities/logger';
-import getDBClient from './db/dbClient';
 
 dotenv.config({ path: `${__dirname}/../.env` });
 const PORT = 8080 || process.env.AUTH_PORT;

@@ -1,6 +1,7 @@
 import { Logger } from 'winston';
 import { Request, Response } from 'express';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import { DBClient } from '../db/dbClient';
 
 export interface AuthController {
@@ -70,14 +71,24 @@ export default (logger: Logger, dbClient: DBClient): AuthController => ({
       const user = userResponse.rows[0];
       const storedHash = user.password_hash;
       const storedSalt = user.salt;
+      const storedId = user.id;
 
       const { hash } = hashPassword(password, storedSalt);
 
       const loginSuccessful = hash === storedHash;
       if (loginSuccessful) {
-        const msg = 'Login successful';
-        logger.info(msg);
-        res.send(msg);
+        logger.info('Login successful');
+
+        const accessToken = jwt.sign({
+          user: username,
+          id: storedId,
+        }, String(process.env.ACCESS_TOKEN_SECRET), {
+          expiresIn: '1h',
+        });
+
+        res.json({
+          accessToken,
+        });
       } else {
         const msg = 'Incorrect username or password';
         logger.info(msg);

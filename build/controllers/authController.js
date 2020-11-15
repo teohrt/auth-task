@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var crypto_1 = __importDefault(require("crypto"));
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // Hashes the password with the salt and returns the pair
 var hashPassword = function (password, saltValue) {
     var hash = crypto_1.default.createHmac('sha512', saltValue);
@@ -87,7 +88,7 @@ exports.default = (function (logger, dbClient) { return ({
         });
     }); },
     login: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, username, password, userResponse, msg, user, storedHash, storedSalt, hash, loginSuccessful, msg, msg;
+        var _a, username, password, userResponse, msg, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -105,12 +106,20 @@ exports.default = (function (logger, dbClient) { return ({
                         user = userResponse.rows[0];
                         storedHash = user.password_hash;
                         storedSalt = user.salt;
+                        storedId = user.id;
                         hash = hashPassword(password, storedSalt).hash;
                         loginSuccessful = hash === storedHash;
                         if (loginSuccessful) {
-                            msg = 'Login successful';
-                            logger.info(msg);
-                            res.send(msg);
+                            logger.info('Login successful');
+                            accessToken = jsonwebtoken_1.default.sign({
+                                user: username,
+                                id: storedId,
+                            }, String(process.env.ACCESS_TOKEN_SECRET), {
+                                expiresIn: '1h',
+                            });
+                            res.json({
+                                accessToken: accessToken,
+                            });
                         }
                         else {
                             msg = 'Incorrect username or password';

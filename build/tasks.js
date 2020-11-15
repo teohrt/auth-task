@@ -24,14 +24,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var dotenv = __importStar(require("dotenv"));
+var body_parser_1 = __importDefault(require("body-parser"));
+var dbClient_1 = __importDefault(require("./db/dbClient"));
+var jwt_1 = __importDefault(require("./middleware/jwt"));
 var index_1 = __importDefault(require("./routes/tasks/index"));
 var logger_1 = __importDefault(require("./utilities/logger"));
-var dbClient_1 = __importDefault(require("./db/dbClient"));
 dotenv.config({ path: __dirname + "/../.env" });
 var PORT = 3000 || process.env.TASK_PORT;
 var dbClient = dbClient_1.default(logger_1.default);
+var middleware = jwt_1.default(logger_1.default);
 var routes = index_1.default(logger_1.default, dbClient);
 var app = express_1.default();
+app.use(body_parser_1.default.json());
+app.use(middleware.jwtValidation);
+app.use(middleware.unauthorizedErrorHandling);
 app.use(routes);
 app.listen(PORT, function () {
     logger_1.default.info("Task service listening at http://localhost:" + PORT);
