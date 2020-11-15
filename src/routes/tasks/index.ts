@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Logger } from 'winston';
-import { DBClient } from '../db/dbClient';
+import { DBClient } from '../../db/dbClient';
 import getV1Routes from './v1';
 import getV2Routes from './v2';
 

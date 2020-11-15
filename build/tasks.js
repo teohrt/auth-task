@@ -24,15 +24,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var dotenv = __importStar(require("dotenv"));
-var index_1 = __importDefault(require("./routes/index"));
+var index_1 = __importDefault(require("./routes/tasks/index"));
 var logger_1 = __importDefault(require("./utilities/logger"));
 var dbClient_1 = __importDefault(require("./db/dbClient"));
 dotenv.config({ path: __dirname + "/../.env" });
-var PORT = 8080 || process.env.PORT;
+var PORT = 3000 || process.env.TASK_PORT;
 var dbClient = dbClient_1.default(logger_1.default);
 var routes = index_1.default(logger_1.default, dbClient);
 var app = express_1.default();
 app.use(routes);
 app.listen(PORT, function () {
-    logger_1.default.info("\uD83D\uDE80 Server ready at http://localhost:" + PORT);
+    logger_1.default.info("Task service listening at http://localhost:" + PORT);
 });

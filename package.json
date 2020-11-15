@@ -1,13 +1,13 @@
 {
   "name": "auth-task",
   "version": "1.0.0",
-  "description": "Example Authentication and Task services",
-  "main": "server.js",
+  "description": "Tasks and Authentication services",
   "scripts": {
-    "start": "npm run build && node build/server.js",
-    "start:dev": "nodemon",
     "build": "rimraf ./build && tsc",
-    "lint": "eslint . --ext .ts"
+    "start-tasks": "node build/tasks.js",
+    "start-auth": "node build/auth.js",
+    "dev-tasks": "concurrently \"tsc -w\" \"nodemon build/tasks.js\"",
+    "dev-auth": "concurrently \"tsc -w\" \"nodemon build/auth.js\""
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "@types/pg": "^7.14.6",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
+    "concurrently": "^5.3.0",
     "eslint": "^7.13.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^6.15.0",
@@ -43,8 +44,10 @@
   },
   "dependencies": {
     "@types/winston": "^2.4.4",
+    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.0",
     "winston": "^3.3.3"
   }
