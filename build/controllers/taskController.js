@@ -41,11 +41,11 @@ exports.default = (function (logger, dbClient) { return ({
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    logger.info('adding task!');
+                    logger.info('Adding task!');
                     return [4 /*yield*/, dbClient.addTask()];
                 case 1:
                     _a.sent();
-                    logger.info('task successfully added');
+                    logger.info('Task added!');
                     res.send('Task added!');
                     return [2 /*return*/];
             }

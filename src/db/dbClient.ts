@@ -1,8 +1,10 @@
-import { Client } from 'pg';
+import { Client, QueryResult } from 'pg';
 import { Logger } from 'winston';
 
 export interface DBClient {
-  addTask: () => Promise<unknown>;
+  addTask: () => Promise<QueryResult>;
+  createUser: (username: string, passwordHash: string, salt: string) => Promise<QueryResult>;
+  getUserByName: (username: string) => Promise<QueryResult>;
 }
 
 export default (logger: Logger): DBClient => {
@@ -26,7 +28,7 @@ export default (logger: Logger): DBClient => {
     logger.error(`Error with DB: ${err.stack}`);
   });
 
-  const dbQuery = async (queryString: string) => {
+  const dbQuery = async (queryString: string): Promise<QueryResult> => {
     try {
       logger.debug(`Query: ${queryString}`);
       return await new Promise((resolve, reject) => {
@@ -39,14 +41,24 @@ export default (logger: Logger): DBClient => {
       });
     } catch (err) {
       logger.error(err);
-      return null;
+      return null as any;
     }
   };
 
   return {
-    addTask: () => dbQuery(`
-    INSERT INTO task(status, name, description)
-    VALUES ('test', 'trace', 'hello world');
+    addTask: async () => dbQuery(`
+    INSERT INTO task(owner_id, status, name, description)
+    VALUES (1, 'test', 'trace', 'hello world');
+    `),
+
+    createUser: async (username, passwordHash, salt) => dbQuery(`
+    INSERT INTO app_user(username, password_hash, salt)
+    VALUES ('${username}', '${passwordHash}', '${salt}');
+    `),
+
+    getUserByName: async (username) => dbQuery(`
+    SELECT * FROM app_user
+    WHERE username = '${username}';
     `),
   };
 };

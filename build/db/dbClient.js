@@ -81,6 +81,20 @@ exports.default = (function (logger) {
         });
     }); };
     return {
-        addTask: function () { return dbQuery("\n    INSERT INTO task(status, name, description)\n    VALUES ('test', 'trace', 'hello world');\n    "); },
+        addTask: function () { return __awaiter(void 0, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, dbQuery("\n    INSERT INTO task(owner_id, status, name, description)\n    VALUES (1, 'test', 'trace', 'hello world');\n    ")];
+            });
+        }); },
+        createUser: function (username, passwordHash, salt) { return __awaiter(void 0, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, dbQuery("\n    INSERT INTO app_user(username, password_hash, salt)\n    VALUES ('" + username + "', '" + passwordHash + "', '" + salt + "');\n    ")];
+            });
+        }); },
+        getUserByName: function (username) { return __awaiter(void 0, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, dbQuery("\n    SELECT * FROM app_user\n    WHERE username = '" + username + "';\n    ")];
+            });
+        }); },
     };
 });
