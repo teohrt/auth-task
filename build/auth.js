@@ -22,17 +22,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var cors_1 = __importDefault(require("cors"));
 var express_1 = __importDefault(require("express"));
 var dotenv = __importStar(require("dotenv"));
 var body_parser_1 = __importDefault(require("body-parser"));
+var logger_1 = __importDefault(require("./utilities/logger"));
 var dbClient_1 = __importDefault(require("./db/dbClient"));
 var index_1 = __importDefault(require("./routes/auth/index"));
-var logger_1 = __importDefault(require("./utilities/logger"));
 dotenv.config({ path: __dirname + "/../.env" });
 var PORT = 8080 || process.env.AUTH_PORT;
 var dbClient = dbClient_1.default(logger_1.default);
 var authRoutes = index_1.default(logger_1.default, dbClient);
 var app = express_1.default();
+app.use(cors_1.default());
 app.use(body_parser_1.default.json());
 app.use(authRoutes);
 app.listen(PORT, function () {
