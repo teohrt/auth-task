@@ -45,7 +45,7 @@ exports.default = (function (logger, dbClient) {
     var validator = taskValidator_1.default(logger, dbClient);
     var errorHandler = errorHandler_1.default(logger);
     return {
-        createTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        v1CreateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
             var _a, status, name, description, userId, validatorResult, result, taskId, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -54,7 +54,7 @@ exports.default = (function (logger, dbClient) {
                         _a = req.body, status = _a.status, name = _a.name, description = _a.description;
                         userId = req.user.id;
                         try {
-                            validatorResult = validator.validateCreateTask(status);
+                            validatorResult = validator.v1ValidateCreateTask(status);
                             if (!validatorResult.isValid) {
                                 res.status(validatorResult.responseCode).send({ validationError: validatorResult.msg });
                                 return [2 /*return*/];
@@ -81,8 +81,44 @@ exports.default = (function (logger, dbClient) {
                 }
             });
         }); },
+        v2CreateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, status, name, description, userId, validatorResult, result, taskId, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        logger.info('Task Controller: createTask');
+                        _a = req.body, status = _a.status, name = _a.name, description = _a.description;
+                        userId = req.user.id;
+                        try {
+                            validatorResult = validator.v2ValidateCreateTask(status);
+                            if (!validatorResult.isValid) {
+                                res.status(validatorResult.responseCode).send({ validationError: validatorResult.msg });
+                                return [2 /*return*/];
+                            }
+                        }
+                        catch (err) {
+                            errorHandler.serverError(res, err);
+                        }
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        logger.info('Creating task');
+                        return [4 /*yield*/, dbClient.createTask(userId, status, name, description)];
+                    case 2:
+                        result = _b.sent();
+                        taskId = result.rows[0].id;
+                        res.status(201).send({ taskId: taskId });
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_2 = _b.sent();
+                        errorHandler.serverError(res, err_2);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); },
         getAllTasksFromUser: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var ownerId, result, tasks, err_2;
+            var ownerId, result, tasks, err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -98,15 +134,15 @@ exports.default = (function (logger, dbClient) {
                         res.status(200).send({ tasks: tasks });
                         return [3 /*break*/, 4];
                     case 3:
-                        err_2 = _a.sent();
-                        errorHandler.serverError(res, err_2);
+                        err_3 = _a.sent();
+                        errorHandler.serverError(res, err_3);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
                 }
             });
         }); },
         getTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var taskId, userId, validatorResult, err_3, result, task, err_4;
+            var taskId, userId, validatorResult, err_4, result, task, err_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -125,8 +161,8 @@ exports.default = (function (logger, dbClient) {
                         }
                         return [3 /*break*/, 4];
                     case 3:
-                        err_3 = _a.sent();
-                        errorHandler.serverError(res, err_3);
+                        err_4 = _a.sent();
+                        errorHandler.serverError(res, err_4);
                         return [3 /*break*/, 4];
                     case 4:
                         _a.trys.push([4, 6, , 7]);
@@ -137,15 +173,15 @@ exports.default = (function (logger, dbClient) {
                         res.status(200).send({ task: task });
                         return [3 /*break*/, 7];
                     case 6:
-                        err_4 = _a.sent();
-                        errorHandler.serverError(res, err_4);
+                        err_5 = _a.sent();
+                        errorHandler.serverError(res, err_5);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }
             });
         }); },
-        updateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, taskId, userId, validatorResult, err_5, err_6;
+        v1UpdateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, status, name, description, taskId, userId, validatorResult, err_6, err_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -156,7 +192,7 @@ exports.default = (function (logger, dbClient) {
                         _b.label = 1;
                     case 1:
                         _b.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, validator.validateUpdateTask(userId, Number(taskId), status)];
+                        return [4 /*yield*/, validator.v1ValidateUpdateTask(userId, Number(taskId), status)];
                     case 2:
                         validatorResult = _b.sent();
                         if (!validatorResult.isValid) {
@@ -165,8 +201,8 @@ exports.default = (function (logger, dbClient) {
                         }
                         return [3 /*break*/, 4];
                     case 3:
-                        err_5 = _b.sent();
-                        errorHandler.serverError(res, err_5);
+                        err_6 = _b.sent();
+                        errorHandler.serverError(res, err_6);
                         return [3 /*break*/, 4];
                     case 4:
                         _b.trys.push([4, 6, , 7]);
@@ -176,15 +212,54 @@ exports.default = (function (logger, dbClient) {
                         res.status(200).send();
                         return [3 /*break*/, 7];
                     case 6:
-                        err_6 = _b.sent();
-                        errorHandler.serverError(res, err_6);
+                        err_7 = _b.sent();
+                        errorHandler.serverError(res, err_7);
+                        return [3 /*break*/, 7];
+                    case 7: return [2 /*return*/];
+                }
+            });
+        }); },
+        v2UpdateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, status, name, description, taskId, userId, validatorResult, err_8, err_9;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        logger.info('Task Controller: updateTask');
+                        _a = req.body, status = _a.status, name = _a.name, description = _a.description;
+                        taskId = req.params.taskId;
+                        userId = req.user.id;
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, validator.v2ValidateUpdateTask(userId, Number(taskId), status)];
+                    case 2:
+                        validatorResult = _b.sent();
+                        if (!validatorResult.isValid) {
+                            res.status(validatorResult.responseCode).send({ validationError: validatorResult.msg });
+                            return [2 /*return*/];
+                        }
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_8 = _b.sent();
+                        errorHandler.serverError(res, err_8);
+                        return [3 /*break*/, 4];
+                    case 4:
+                        _b.trys.push([4, 6, , 7]);
+                        return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description)];
+                    case 5:
+                        _b.sent();
+                        res.status(200).send();
+                        return [3 /*break*/, 7];
+                    case 6:
+                        err_9 = _b.sent();
+                        errorHandler.serverError(res, err_9);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }
             });
         }); },
         deleteTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var taskId, userId, validatorResult, err_7, err_8;
+            var taskId, userId, validatorResult, err_10, err_11;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -203,8 +278,8 @@ exports.default = (function (logger, dbClient) {
                         }
                         return [3 /*break*/, 4];
                     case 3:
-                        err_7 = _a.sent();
-                        errorHandler.serverError(res, err_7);
+                        err_10 = _a.sent();
+                        errorHandler.serverError(res, err_10);
                         return [3 /*break*/, 4];
                     case 4:
                         _a.trys.push([4, 6, , 7]);
@@ -214,8 +289,8 @@ exports.default = (function (logger, dbClient) {
                         res.status(200).send();
                         return [3 /*break*/, 7];
                     case 6:
-                        err_8 = _a.sent();
-                        errorHandler.serverError(res, err_8);
+                        err_11 = _a.sent();
+                        errorHandler.serverError(res, err_11);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }

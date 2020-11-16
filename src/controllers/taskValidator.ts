@@ -9,19 +9,41 @@ export interface ValidationResponse {
 }
 
 export interface TaskValidator {
-  validateCreateTask: (status: string) => ValidationResponse
+  v1ValidateCreateTask: (status: string) => ValidationResponse
+  v2ValidateCreateTask: (status: string) => ValidationResponse
   validateGetTask: (userId: number, taskId: number) => Promise<ValidationResponse>
-  validateUpdateTask: (userId: number, taskId: number, status: string) => Promise<ValidationResponse>
+  v1ValidateUpdateTask: (userId: number, taskId: number, status: string) => Promise<ValidationResponse>
+  v2ValidateUpdateTask: (userId: number, taskId: number, status: string) => Promise<ValidationResponse>
   validateDeleteTask: (userId: number, taskId: number) => Promise<ValidationResponse>
 }
 
 const v1Statuses = ['New', 'Completed'];
+const v2Statuses = [...v1Statuses, 'In Progress'];
 
 export default (logger: Logger, dbClient: DBClient): TaskValidator => {
-  const checkStatusInput = (status: string): ValidationResponse => {
+  const v1CheckStatusInput = (status: string): ValidationResponse => {
     // Check to see if status value is in list of acceptable values
     logger.info(`Validating status input: ${status}`);
     if (!v1Statuses.includes(status)) {
+      const msg = 'Status may only be \'New\' or \'Completed\'';
+      logger.info(`Validation failed: ${msg}`);
+      return {
+        isValid: false,
+        responseCode: 400,
+        msg,
+      };
+    }
+    return {
+      isValid: true,
+      responseCode: -1,
+      msg: '',
+    };
+  };
+
+  const v2CheckStatusInput = (status: string): ValidationResponse => {
+    // Check to see if status value is in list of acceptable values
+    logger.info(`Validating status input: ${status}`);
+    if (!v2Statuses.includes(status)) {
       const msg = 'Status may only be \'New\' or \'Completed\'';
       logger.info(`Validation failed: ${msg}`);
       return {
@@ -72,12 +94,20 @@ export default (logger: Logger, dbClient: DBClient): TaskValidator => {
   };
 
   return {
-    validateCreateTask: (status) => checkStatusInput(status),
+    v1ValidateCreateTask: (status) => v1CheckStatusInput(status),
+
+    v2ValidateCreateTask: (status) => v2CheckStatusInput(status),
 
     validateGetTask: (userId, taskId) => checkIfTaskExistsAndBelongsToUser(userId, taskId),
 
-    validateUpdateTask: async (userId, taskId, status) => {
-      const statusResult = checkStatusInput(status);
+    v1ValidateUpdateTask: async (userId, taskId, status) => {
+      const statusResult = v1CheckStatusInput(status);
+      if (!statusResult.isValid) { return statusResult; }
+      return checkIfTaskExistsAndBelongsToUser(userId, taskId);
+    },
+
+    v2ValidateUpdateTask: async (userId, taskId, status) => {
+      const statusResult = v2CheckStatusInput(status);
       if (!statusResult.isValid) { return statusResult; }
       return checkIfTaskExistsAndBelongsToUser(userId, taskId);
     },
