@@ -7,7 +7,11 @@ export default (logger: Logger, dbClient: DBClient): Router => {
   const taskController = getTaskController(logger, dbClient);
 
   const router = Router();
-  router.get('/add', taskController.addTask);
+  router.post('/tasks', taskController.createTask);
+  router.get('/tasks', taskController.getAllTasksFromUser);
+  router.get('/tasks/:taskId', taskController.getTask);
+  router.put('/tasks/:taskId', taskController.updateTask);
+  router.delete('/tasks/:taskId', taskController.deleteTask);
 
   return router;
 };

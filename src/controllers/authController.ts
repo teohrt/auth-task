@@ -36,64 +36,74 @@ const saltHashPassword = (password: string): saltHash => {
 
 export default (logger: Logger, dbClient: DBClient): AuthController => ({
   register: async (req, res) => {
-    logger.info('AuthController: Attempting registration');
-    const { username, password } = req.body;
+    try {
+      logger.info('AuthController: Attempting registration');
+      const { username, password } = req.body;
 
-    // Verify unique username
-    const userResponse = await dbClient.getUserByName(username);
-    if (userResponse.rowCount < 1) {
-      logger.info(`Username '${username}' is available`);
-    } else {
-      const msg = `Username '${username}' is not available`;
-      logger.info(msg);
-      res.send(msg);
-      return;
+      // Verify unique username
+      const userResponse = await dbClient.getUserByName(username);
+      if (userResponse.rowCount < 1) {
+        logger.info(`Username '${username}' is available`);
+      } else {
+        const msg = `Username '${username}' is not available`;
+        logger.info(msg);
+        res.send(msg);
+        return;
+      }
+
+      // If unique, create user
+      const { salt, hash } = saltHashPassword(password);
+      await dbClient.createUser(username, hash, salt);
+      res.send('User Registered!');
+    } catch (err) {
+      logger.error(err);
+      res.status(500).send({ error: 'Server error' });
     }
-
-    // If unique, create user
-    const { salt, hash } = saltHashPassword(password);
-    await dbClient.createUser(username, hash, salt);
-    res.send('User Registered!');
   },
 
   login: async (req, res) => {
-    logger.info('AuthController: Attempting login');
-    const { username, password } = req.body;
+    try {
+      logger.info('AuthController: Attempting login');
+      const { username, password } = req.body;
 
-    // Retrieve user data
-    const userResponse = await dbClient.getUserByName(username);
-    if (userResponse.rowCount < 1) {
-      const msg = 'Incorrect username or password';
-      logger.info(msg);
-      res.send(msg);
-    } else {
-      // Verify password
-      const user = userResponse.rows[0];
-      const storedHash = user.password_hash;
-      const storedSalt = user.salt;
-      const storedId = user.id;
-
-      const { hash } = hashPassword(password, storedSalt);
-
-      const loginSuccessful = hash === storedHash;
-      if (loginSuccessful) {
-        logger.info('Login successful');
-
-        const accessToken = jwt.sign({
-          user: username,
-          id: storedId,
-        }, String(process.env.ACCESS_TOKEN_SECRET), {
-          expiresIn: '1h',
-        });
-
-        res.json({
-          accessToken,
-        });
-      } else {
+      // Retrieve user data
+      const userResponse = await dbClient.getUserByName(username);
+      if (userResponse.rowCount < 1) {
         const msg = 'Incorrect username or password';
         logger.info(msg);
         res.send(msg);
+      } else {
+        // Verify password
+        const user = userResponse.rows[0];
+        const storedHash = user.password_hash;
+        const storedSalt = user.salt;
+        const storedId = user.id;
+
+        const { hash } = hashPassword(password, storedSalt);
+
+        const loginSuccessful = hash === storedHash;
+        if (loginSuccessful) {
+          logger.info('Login successful');
+
+          const accessToken = jwt.sign({
+            user: username,
+            id: storedId,
+          }, String(process.env.ACCESS_TOKEN_SECRET), {
+            expiresIn: '1h',
+          });
+
+          res.json({
+            accessToken,
+          });
+        } else {
+          const msg = 'Incorrect username or password';
+          logger.info(msg);
+          res.send(msg);
+        }
       }
+    } catch (err) {
+      logger.error(err);
+      res.status(500).send({ error: 'Server error' });
     }
   },
 });

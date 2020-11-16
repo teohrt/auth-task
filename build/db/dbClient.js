@@ -36,65 +36,93 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable max-len */
 var pg_1 = require("pg");
-exports.default = (function (logger) {
-    var client = new pg_1.Client({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT),
-        database: process.env.PGDATABASE,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-    });
-    client.connect(function (err) {
-        if (err) {
-            logger.error("DB connection error: " + err.stack);
-        }
-        else {
-            logger.info('DB connected');
-        }
-    });
-    client.on('error', function (err) {
-        logger.error("Error with DB: " + err.stack);
-    });
-    var dbQuery = function (queryString) { return __awaiter(void 0, void 0, void 0, function () {
-        var err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    logger.debug("Query: " + queryString);
-                    return [4 /*yield*/, new Promise(function (resolve, reject) {
-                            client.query(queryString, function (err, res) {
-                                if (err) {
-                                    reject(err.stack);
-                                }
-                                resolve(res);
+exports.default = (function (logger) { return __awaiter(void 0, void 0, void 0, function () {
+    var pool, client, err_1, dbQuery;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pool = new pg_1.Pool({
+                    host: process.env.PGHOST,
+                    port: Number(process.env.PGPORT),
+                    database: process.env.PGDATABASE,
+                    user: process.env.PGUSER,
+                    password: process.env.PGPASSWORD,
+                });
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, pool.connect()];
+            case 2:
+                client = _a.sent();
+                logger.info('DB Connected');
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                logger.error("DB connection error: " + err_1.stack);
+                return [3 /*break*/, 4];
+            case 4:
+                dbQuery = function (queryString) { return __awaiter(void 0, void 0, void 0, function () {
+                    var err_2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                logger.debug("Query: " + queryString);
+                                return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                        client.query(queryString, function (err, res) {
+                                            if (err) {
+                                                reject(err.stack);
+                                            }
+                                            resolve(res);
+                                        });
+                                    })];
+                            case 1: return [2 /*return*/, _a.sent()];
+                            case 2:
+                                err_2 = _a.sent();
+                                return [2 /*return*/, err_2];
+                            case 3: return [2 /*return*/];
+                        }
+                    });
+                }); };
+                return [2 /*return*/, {
+                        createUser: function (username, passwordHash, salt) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    INSERT INTO app_user(username, password_hash, salt)\n    VALUES ('" + username + "', '" + passwordHash + "', '" + salt + "')\n    RETURNING id;\n    ")];
                             });
-                        })];
-                case 1: return [2 /*return*/, _a.sent()];
-                case 2:
-                    err_1 = _a.sent();
-                    logger.error(err_1);
-                    return [2 /*return*/, null];
-                case 3: return [2 /*return*/];
-            }
-        });
-    }); };
-    return {
-        addTask: function () { return __awaiter(void 0, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, dbQuery("\n    INSERT INTO task(owner_id, status, name, description)\n    VALUES (1, 'test', 'trace', 'hello world');\n    ")];
-            });
-        }); },
-        createUser: function (username, passwordHash, salt) { return __awaiter(void 0, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, dbQuery("\n    INSERT INTO app_user(username, password_hash, salt)\n    VALUES ('" + username + "', '" + passwordHash + "', '" + salt + "');\n    ")];
-            });
-        }); },
-        getUserByName: function (username) { return __awaiter(void 0, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, dbQuery("\n    SELECT * FROM app_user\n    WHERE username = '" + username + "';\n    ")];
-            });
-        }); },
-    };
-});
+                        }); },
+                        getUserByName: function (username) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    SELECT * FROM app_user\n    WHERE username = '" + username + "';\n    ")];
+                            });
+                        }); },
+                        createTask: function (ownerId, status, name, description) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    INSERT INTO task(owner_id, status, name, description)\n    VALUES (" + ownerId + ", '" + status + "', '" + name + "', '" + description + "')\n    RETURNING id;\n    ")];
+                            });
+                        }); },
+                        getAllTasksFromUser: function (ownerId) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    SELECT * FROM task\n    WHERE owner_id = " + ownerId + ";\n    ")];
+                            });
+                        }); },
+                        getTask: function (taskId) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    SELECT * FROM task\n    WHERE id = " + taskId + ";\n    ")];
+                            });
+                        }); },
+                        updateTask: function (taskId, status, name, description) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    UPDATE task\n    SET   status = '" + status + "',\n          name = '" + name + "',\n          description = '" + description + "'\n    WHERE id = " + taskId + ";\n    ")];
+                            });
+                        }); },
+                        deleteTask: function (taskId) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                return [2 /*return*/, dbQuery("\n    DELETE FROM task\n    WHERE id = " + taskId + ";\n    ")];
+                            });
+                        }); },
+                    }];
+        }
+    });
+}); });
