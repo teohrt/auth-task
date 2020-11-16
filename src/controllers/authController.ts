@@ -48,16 +48,17 @@ export default (logger: Logger, dbClient: DBClient): IAuthController => {
         if (userResponse.rowCount < 1) {
           logger.info(`Username '${username}' is available`);
         } else {
-          const msg = `Username '${username}' is not available`;
-          logger.info(msg);
-          res.send(msg);
+          const message = `Username '${username}' is not available`;
+          logger.info(message);
+          res.status(406).send({ message });
           return;
         }
 
         // If unique, create user
         const { salt, hash } = saltHashPassword(password);
         await dbClient.createUser(username, hash, salt);
-        res.send('User Registered!');
+        const message = 'Username & password registered';
+        res.status(200).send({ message });
       } catch (err) {
         errorHandler.serverError(res, err);
       }
@@ -71,9 +72,9 @@ export default (logger: Logger, dbClient: DBClient): IAuthController => {
         // Retrieve user data
         const userResponse = await dbClient.getUserByName(username);
         if (userResponse.rowCount < 1) {
-          const msg = 'Incorrect username or password';
-          logger.info(msg);
-          res.send(msg);
+          const message = 'Incorrect username or password';
+          logger.info(message);
+          res.status(401).send({ message });
         } else {
         // Verify password
           const user = userResponse.rows[0];

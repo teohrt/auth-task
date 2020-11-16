@@ -63,7 +63,7 @@ exports.default = (function (logger, dbClient) {
     var errorHandler = errorHandler_1.default(logger);
     return {
         register: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, username, password, userResponse, msg, _b, salt, hash, err_1;
+            var _a, username, password, userResponse, message_1, _b, salt, hash, message, err_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -77,16 +77,17 @@ exports.default = (function (logger, dbClient) {
                             logger.info("Username '" + username + "' is available");
                         }
                         else {
-                            msg = "Username '" + username + "' is not available";
-                            logger.info(msg);
-                            res.send(msg);
+                            message_1 = "Username '" + username + "' is not available";
+                            logger.info(message_1);
+                            res.status(406).send({ message: message_1 });
                             return [2 /*return*/];
                         }
                         _b = saltHashPassword(password), salt = _b.salt, hash = _b.hash;
                         return [4 /*yield*/, dbClient.createUser(username, hash, salt)];
                     case 2:
                         _c.sent();
-                        res.send('User Registered!');
+                        message = 'Username & password registered';
+                        res.status(200).send({ message: message });
                         return [3 /*break*/, 4];
                     case 3:
                         err_1 = _c.sent();
@@ -97,7 +98,7 @@ exports.default = (function (logger, dbClient) {
             });
         }); },
         login: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, username, password, userResponse, msg, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg, err_2;
+            var _a, username, password, userResponse, message, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg, err_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -108,9 +109,9 @@ exports.default = (function (logger, dbClient) {
                     case 1:
                         userResponse = _b.sent();
                         if (userResponse.rowCount < 1) {
-                            msg = 'Incorrect username or password';
-                            logger.info(msg);
-                            res.send(msg);
+                            message = 'Incorrect username or password';
+                            logger.info(message);
+                            res.status(401).send({ message: message });
                         }
                         else {
                             user = userResponse.rows[0];
