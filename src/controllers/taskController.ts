@@ -21,11 +21,15 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
 
   return {
     v1CreateTask: async (req, res) => {
-      logger.info('Task Controller: createTask');
+      logger.info('Task Controller: v1CreateTask');
       const {
-        status, name, description, dueDate,
+        name, description, dueDate,
       } = req.body;
       const userId = req.user.id;
+
+      // If status isn't specified, default to 'New'
+      let { status } = req.body;
+      if (status === undefined || status === '') { status = 'New'; }
 
       try {
         const validatorResult = validator.v1ValidateCreateTask(status);
@@ -48,11 +52,15 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
     },
 
     v2CreateTask: async (req, res) => {
-      logger.info('Task Controller: createTask');
+      logger.info('Task Controller: v2CreateTask');
       const {
-        status, name, description, dueDate,
+        name, description, dueDate,
       } = req.body;
       const userId = req.user.id;
+
+      // If status isn't specified, default to 'New'
+      let { status } = req.body;
+      if (status === undefined || status === '') { status = 'New'; }
 
       try {
         const validatorResult = validator.v2ValidateCreateTask(status);
@@ -112,7 +120,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
     },
 
     v1UpdateTask: async (req, res) => {
-      logger.info('Task Controller: updateTask');
+      logger.info('Task Controller: v1UpdateTask');
       const {
         status, name, description, dueDate,
       } = req.body;
@@ -138,7 +146,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
     },
 
     v2UpdateTask: async (req, res) => {
-      logger.info('Task Controller: updateTask');
+      logger.info('Task Controller: v2UpdateTask');
       const {
         status, name, description, dueDate,
       } = req.body;

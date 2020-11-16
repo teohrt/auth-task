@@ -46,13 +46,17 @@ exports.default = (function (logger, dbClient) {
     var errorHandler = errorHandler_1.default(logger);
     return {
         v1CreateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, dueDate, userId, validatorResult, result, taskId, err_1;
+            var _a, name, description, dueDate, userId, status, validatorResult, result, taskId, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        logger.info('Task Controller: createTask');
-                        _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
+                        logger.info('Task Controller: v1CreateTask');
+                        _a = req.body, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         userId = req.user.id;
+                        status = req.body.status;
+                        if (status === undefined || status === '') {
+                            status = 'New';
+                        }
                         try {
                             validatorResult = validator.v1ValidateCreateTask(status);
                             if (!validatorResult.isValid) {
@@ -82,13 +86,17 @@ exports.default = (function (logger, dbClient) {
             });
         }); },
         v2CreateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, dueDate, userId, validatorResult, result, taskId, err_2;
+            var _a, name, description, dueDate, userId, status, validatorResult, result, taskId, err_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        logger.info('Task Controller: createTask');
-                        _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
+                        logger.info('Task Controller: v2CreateTask');
+                        _a = req.body, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         userId = req.user.id;
+                        status = req.body.status;
+                        if (status === undefined || status === '') {
+                            status = 'New';
+                        }
                         try {
                             validatorResult = validator.v2ValidateCreateTask(status);
                             if (!validatorResult.isValid) {
@@ -185,7 +193,7 @@ exports.default = (function (logger, dbClient) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        logger.info('Task Controller: updateTask');
+                        logger.info('Task Controller: v1UpdateTask');
                         _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         taskId = req.params.taskId;
                         userId = req.user.id;
@@ -224,7 +232,7 @@ exports.default = (function (logger, dbClient) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        logger.info('Task Controller: updateTask');
+                        logger.info('Task Controller: v2UpdateTask');
                         _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         taskId = req.params.taskId;
                         userId = req.user.id;
