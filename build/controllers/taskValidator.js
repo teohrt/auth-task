@@ -35,13 +35,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var v1Statuses = ['New', 'Completed'];
+var v2Statuses = __spreadArrays(v1Statuses, ['In Progress']);
 exports.default = (function (logger, dbClient) {
-    var checkStatusInput = function (status) {
+    var v1CheckStatusInput = function (status) {
         // Check to see if status value is in list of acceptable values
         logger.info("Validating status input: " + status);
         if (!v1Statuses.includes(status)) {
+            var msg = 'Status may only be \'New\' or \'Completed\'';
+            logger.info("Validation failed: " + msg);
+            return {
+                isValid: false,
+                responseCode: 400,
+                msg: msg,
+            };
+        }
+        return {
+            isValid: true,
+            responseCode: -1,
+            msg: '',
+        };
+    };
+    var v2CheckStatusInput = function (status) {
+        // Check to see if status value is in list of acceptable values
+        logger.info("Validating status input: " + status);
+        if (!v2Statuses.includes(status)) {
             var msg = 'Status may only be \'New\' or \'Completed\'';
             logger.info("Validation failed: " + msg);
             return {
@@ -97,12 +123,23 @@ exports.default = (function (logger, dbClient) {
         });
     }); };
     return {
-        validateCreateTask: function (status) { return checkStatusInput(status); },
+        v1ValidateCreateTask: function (status) { return v1CheckStatusInput(status); },
+        v2ValidateCreateTask: function (status) { return v2CheckStatusInput(status); },
         validateGetTask: function (userId, taskId) { return checkIfTaskExistsAndBelongsToUser(userId, taskId); },
-        validateUpdateTask: function (userId, taskId, status) { return __awaiter(void 0, void 0, void 0, function () {
+        v1ValidateUpdateTask: function (userId, taskId, status) { return __awaiter(void 0, void 0, void 0, function () {
             var statusResult;
             return __generator(this, function (_a) {
-                statusResult = checkStatusInput(status);
+                statusResult = v1CheckStatusInput(status);
+                if (!statusResult.isValid) {
+                    return [2 /*return*/, statusResult];
+                }
+                return [2 /*return*/, checkIfTaskExistsAndBelongsToUser(userId, taskId)];
+            });
+        }); },
+        v2ValidateUpdateTask: function (userId, taskId, status) { return __awaiter(void 0, void 0, void 0, function () {
+            var statusResult;
+            return __generator(this, function (_a) {
+                statusResult = v2CheckStatusInput(status);
                 if (!statusResult.isValid) {
                     return [2 /*return*/, statusResult];
                 }

@@ -1,10 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
-// import getTaskController from '../../controllers/taskController';
+var taskController_1 = __importDefault(require("../../controllers/taskController"));
 exports.default = (function (logger, dbClient) {
-    // const taskController = getTaskController(logger, dbClient);
+    var taskController = taskController_1.default(logger, dbClient);
     var router = express_1.Router();
-    // router.use('/add', taskController.addTask);
+    router.post('/tasks', taskController.v2CreateTask);
+    router.get('/tasks', taskController.getAllTasksFromUser);
+    router.get('/tasks/:taskId', taskController.getTask);
+    router.put('/tasks/:taskId', taskController.v2UpdateTask);
+    router.delete('/tasks/:taskId', taskController.deleteTask);
     return router;
 });
