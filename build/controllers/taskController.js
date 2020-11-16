@@ -40,8 +40,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var taskValidator_1 = __importDefault(require("./taskValidator"));
+var errorHandler_1 = __importDefault(require("../utilities/errorHandler"));
 exports.default = (function (logger, dbClient) {
     var validator = taskValidator_1.default(logger, dbClient);
+    var errorHandler = errorHandler_1.default(logger);
     return {
         createTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
             var _a, status, name, description, userId, validatorResult, result, taskId, err_1;
@@ -59,9 +61,7 @@ exports.default = (function (logger, dbClient) {
                             }
                         }
                         catch (err) {
-                            logger.error(err);
-                            res.status(500).send({ error: 'Server error' });
-                            return [2 /*return*/];
+                            errorHandler.serverError(res, err);
                         }
                         _b.label = 1;
                     case 1:
@@ -75,8 +75,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 3:
                         err_1 = _b.sent();
-                        logger.error(err_1);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_1);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
                 }
@@ -100,8 +99,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 3:
                         err_2 = _a.sent();
-                        logger.error(err_2);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_2);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
                 }
@@ -128,8 +126,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 3:
                         err_3 = _a.sent();
-                        logger.error(err_3);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_3);
                         return [3 /*break*/, 4];
                     case 4:
                         _a.trys.push([4, 6, , 7]);
@@ -141,8 +138,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 7];
                     case 6:
                         err_4 = _a.sent();
-                        logger.error(err_4);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_4);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }
@@ -170,8 +166,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 3:
                         err_5 = _b.sent();
-                        logger.error(err_5);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_5);
                         return [3 /*break*/, 4];
                     case 4:
                         _b.trys.push([4, 6, , 7]);
@@ -182,8 +177,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 7];
                     case 6:
                         err_6 = _b.sent();
-                        logger.error(err_6);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_6);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }
@@ -210,8 +204,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 3:
                         err_7 = _a.sent();
-                        logger.error(err_7);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_7);
                         return [3 /*break*/, 4];
                     case 4:
                         _a.trys.push([4, 6, , 7]);
@@ -222,8 +215,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 7];
                     case 6:
                         err_8 = _a.sent();
-                        logger.error(err_8);
-                        res.status(500).send({ error: 'Server error' });
+                        errorHandler.serverError(res, err_8);
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }

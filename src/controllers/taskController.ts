@@ -2,6 +2,7 @@ import { Logger } from 'winston';
 import { Request, Response, NextFunction } from 'express';
 import { DBClient } from '../db/dbClient';
 import getValidator from './taskValidator';
+import getErrorHandler from '../utilities/errorHandler';
 
 export interface TaskController {
   createTask: (req: Request, res: Response) => void;
@@ -13,6 +14,7 @@ export interface TaskController {
 
 export default (logger: Logger, dbClient: DBClient): TaskController => {
   const validator = getValidator(logger, dbClient);
+  const errorHandler = getErrorHandler(logger);
 
   return {
     createTask: async (req, res) => {
@@ -27,9 +29,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
           return;
         }
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
-        return;
+        errorHandler.serverError(res, err);
       }
 
       try {
@@ -38,8 +38,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
         const taskId = result.rows[0].id;
         res.status(201).send({ taskId });
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
     },
 
@@ -52,8 +51,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
         const tasks = result.rows;
         res.status(200).send({ tasks });
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
     },
 
@@ -69,8 +67,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
           return;
         }
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
 
       try {
@@ -78,8 +75,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
         const task = result.rows[0];
         res.status(200).send({ task });
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
     },
 
@@ -96,16 +92,14 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
           return;
         }
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
 
       try {
         await dbClient.updateTask(Number(taskId), status, name, description);
         res.status(200).send();
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
     },
 
@@ -121,16 +115,14 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
           return;
         }
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
 
       try {
         await dbClient.deleteTask(Number(taskId));
         res.status(200).send();
       } catch (err) {
-        logger.error(err);
-        res.status(500).send({ error: 'Server error' });
+        errorHandler.serverError(res, err);
       }
     },
   };

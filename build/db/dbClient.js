@@ -81,7 +81,7 @@ exports.default = (function (logger) { return __awaiter(void 0, void 0, void 0, 
                             case 1: return [2 /*return*/, _a.sent()];
                             case 2:
                                 err_2 = _a.sent();
-                                return [2 /*return*/, err_2];
+                                return [2 /*return*/, null];
                             case 3: return [2 /*return*/];
                         }
                     });

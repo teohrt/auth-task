@@ -41,7 +41,7 @@ export default async (logger: Logger): Promise<DBClient> => {
         });
       });
     } catch (err) {
-      return err as any;
+      return null as any;
     }
   };
 

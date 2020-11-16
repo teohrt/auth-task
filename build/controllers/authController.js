@@ -41,6 +41,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var crypto_1 = __importDefault(require("crypto"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var errorHandler_1 = __importDefault(require("../utilities/errorHandler"));
 // Hashes the password with the salt and returns the pair
 var hashPassword = function (password, saltValue) {
     var hash = crypto_1.default.createHmac('sha512', saltValue);
@@ -58,91 +59,92 @@ var saltHashPassword = function (password) {
     var saltValue = generateSalt(16);
     return hashPassword(password, saltValue);
 };
-exports.default = (function (logger, dbClient) { return ({
-    register: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, username, password, userResponse, msg, _b, salt, hash, err_1;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    _c.trys.push([0, 3, , 4]);
-                    logger.info('AuthController: Attempting registration');
-                    _a = req.body, username = _a.username, password = _a.password;
-                    return [4 /*yield*/, dbClient.getUserByName(username)];
-                case 1:
-                    userResponse = _c.sent();
-                    if (userResponse.rowCount < 1) {
-                        logger.info("Username '" + username + "' is available");
-                    }
-                    else {
-                        msg = "Username '" + username + "' is not available";
-                        logger.info(msg);
-                        res.send(msg);
-                        return [2 /*return*/];
-                    }
-                    _b = saltHashPassword(password), salt = _b.salt, hash = _b.hash;
-                    return [4 /*yield*/, dbClient.createUser(username, hash, salt)];
-                case 2:
-                    _c.sent();
-                    res.send('User Registered!');
-                    return [3 /*break*/, 4];
-                case 3:
-                    err_1 = _c.sent();
-                    logger.error(err_1);
-                    res.status(500).send({ error: 'Server error' });
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
-            }
-        });
-    }); },
-    login: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, username, password, userResponse, msg, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg, err_2;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 2, , 3]);
-                    logger.info('AuthController: Attempting login');
-                    _a = req.body, username = _a.username, password = _a.password;
-                    return [4 /*yield*/, dbClient.getUserByName(username)];
-                case 1:
-                    userResponse = _b.sent();
-                    if (userResponse.rowCount < 1) {
-                        msg = 'Incorrect username or password';
-                        logger.info(msg);
-                        res.send(msg);
-                    }
-                    else {
-                        user = userResponse.rows[0];
-                        storedHash = user.password_hash;
-                        storedSalt = user.salt;
-                        storedId = user.id;
-                        hash = hashPassword(password, storedSalt).hash;
-                        loginSuccessful = hash === storedHash;
-                        if (loginSuccessful) {
-                            logger.info('Login successful');
-                            accessToken = jsonwebtoken_1.default.sign({
-                                user: username,
-                                id: storedId,
-                            }, String(process.env.ACCESS_TOKEN_SECRET), {
-                                expiresIn: '1h',
-                            });
-                            res.json({
-                                accessToken: accessToken,
-                            });
+exports.default = (function (logger, dbClient) {
+    var errorHandler = errorHandler_1.default(logger);
+    return {
+        register: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, username, password, userResponse, msg, _b, salt, hash, err_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 3, , 4]);
+                        logger.info('AuthController: Attempting registration');
+                        _a = req.body, username = _a.username, password = _a.password;
+                        return [4 /*yield*/, dbClient.getUserByName(username)];
+                    case 1:
+                        userResponse = _c.sent();
+                        if (userResponse.rowCount < 1) {
+                            logger.info("Username '" + username + "' is available");
                         }
                         else {
+                            msg = "Username '" + username + "' is not available";
+                            logger.info(msg);
+                            res.send(msg);
+                            return [2 /*return*/];
+                        }
+                        _b = saltHashPassword(password), salt = _b.salt, hash = _b.hash;
+                        return [4 /*yield*/, dbClient.createUser(username, hash, salt)];
+                    case 2:
+                        _c.sent();
+                        res.send('User Registered!');
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _c.sent();
+                        errorHandler.serverError(res, err_1);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); },
+        login: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, username, password, userResponse, msg, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        logger.info('AuthController: Attempting login');
+                        _a = req.body, username = _a.username, password = _a.password;
+                        return [4 /*yield*/, dbClient.getUserByName(username)];
+                    case 1:
+                        userResponse = _b.sent();
+                        if (userResponse.rowCount < 1) {
                             msg = 'Incorrect username or password';
                             logger.info(msg);
                             res.send(msg);
                         }
-                    }
-                    return [3 /*break*/, 3];
-                case 2:
-                    err_2 = _b.sent();
-                    logger.error(err_2);
-                    res.status(500).send({ error: 'Server error' });
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    }); },
-}); });
+                        else {
+                            user = userResponse.rows[0];
+                            storedHash = user.password_hash;
+                            storedSalt = user.salt;
+                            storedId = user.id;
+                            hash = hashPassword(password, storedSalt).hash;
+                            loginSuccessful = hash === storedHash;
+                            if (loginSuccessful) {
+                                logger.info('Login successful');
+                                accessToken = jsonwebtoken_1.default.sign({
+                                    user: username,
+                                    id: storedId,
+                                }, String(process.env.ACCESS_TOKEN_SECRET), {
+                                    expiresIn: '1h',
+                                });
+                                res.json({
+                                    accessToken: accessToken,
+                                });
+                            }
+                            else {
+                                msg = 'Incorrect username or password';
+                                logger.info(msg);
+                                res.send(msg);
+                            }
+                        }
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_2 = _b.sent();
+                        errorHandler.serverError(res, err_2);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        }); },
+    };
+});
