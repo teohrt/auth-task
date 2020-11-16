@@ -8,7 +8,7 @@ The Task Service allows authorized users to perform operations on their tasks.
     * [Register](docs/registerContract.md)
         * `POST {{auth-endpoint}}/register`
     * [Login](docs/loginContract.md)
-        * `GET {{auth-endpoint}}/login`
+        * `POST {{auth-endpoint}}/login`
 * Tasks API
     * [Create Task](docs/createTaskContract.md)
         * `POST {{tasks-endpoint}}/v1/tasks`
@@ -80,11 +80,11 @@ The Task Service allows authorized users to perform operations on their tasks.
 
 
 ### Local Dev Notes:
-If changes are made to `/backend/docker/dev/init.sql`, the old docker image must be deleted, regenerated and containerized for the changes to take place.
+If changes are made to `/docker/local-db/init.sql`, the old docker image must be deleted, regenerated and containerized for the changes to take place.
 
 The command for deleting the previous image is:
 ```bash
 make rm-image
 ```
 
-After deleting the image with that command, follow "2.  Initialize the local DB" steps again for your local DB to be back up and running.
+After deleting the image with that command, follow "Step 1.  Initialize the local DB with Docker" again for your local DB to be back up and running.
