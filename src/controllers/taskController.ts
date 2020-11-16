@@ -5,7 +5,7 @@ import { DBClient } from '../db/dbClient';
 import getValidator from './taskValidator';
 import getErrorHandler from '../utilities/errorHandler';
 
-export interface TaskController {
+interface ITaskController {
   v1CreateTask: (req: Request, res: Response) => void;
   v2CreateTask: (req: Request, res: Response) => void;
   getAllTasksFromUser: (req: Request, res: Response) => void;
@@ -15,7 +15,7 @@ export interface TaskController {
   deleteTask: (req: Request, res: Response) => void;
 }
 
-export default (logger: Logger, dbClient: DBClient): TaskController => {
+export default (logger: Logger, dbClient: DBClient): ITaskController => {
   const validator = getValidator(logger, dbClient);
   const errorHandler = getErrorHandler(logger);
 

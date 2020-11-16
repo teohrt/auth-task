@@ -2,26 +2,26 @@
 import { Logger } from 'winston';
 import { DBClient } from '../db/dbClient';
 
-export interface ValidationResponse {
+interface IValidationResponse {
   isValid: boolean
   responseCode: number
   msg: string
 }
 
-export interface TaskValidator {
-  v1ValidateCreateTask: (status: string) => ValidationResponse
-  v2ValidateCreateTask: (status: string) => ValidationResponse
-  validateGetTask: (userId: number, taskId: number) => Promise<ValidationResponse>
-  v1ValidateUpdateTask: (userId: number, taskId: number, status: string) => Promise<ValidationResponse>
-  v2ValidateUpdateTask: (userId: number, taskId: number, status: string) => Promise<ValidationResponse>
-  validateDeleteTask: (userId: number, taskId: number) => Promise<ValidationResponse>
+interface ITaskValidator {
+  v1ValidateCreateTask: (status: string) => IValidationResponse
+  v2ValidateCreateTask: (status: string) => IValidationResponse
+  validateGetTask: (userId: number, taskId: number) => Promise<IValidationResponse>
+  v1ValidateUpdateTask: (userId: number, taskId: number, status: string) => Promise<IValidationResponse>
+  v2ValidateUpdateTask: (userId: number, taskId: number, status: string) => Promise<IValidationResponse>
+  validateDeleteTask: (userId: number, taskId: number) => Promise<IValidationResponse>
 }
 
 const v1Statuses = ['New', 'Completed'];
 const v2Statuses = [...v1Statuses, 'In Progress'];
 
-export default (logger: Logger, dbClient: DBClient): TaskValidator => {
-  const v1CheckStatusInput = (status: string): ValidationResponse => {
+export default (logger: Logger, dbClient: DBClient): ITaskValidator => {
+  const v1CheckStatusInput = (status: string): IValidationResponse => {
     // Check to see if status value is in list of acceptable values
     logger.info(`Validating status input: ${status}`);
     if (!v1Statuses.includes(status)) {
@@ -40,7 +40,7 @@ export default (logger: Logger, dbClient: DBClient): TaskValidator => {
     };
   };
 
-  const v2CheckStatusInput = (status: string): ValidationResponse => {
+  const v2CheckStatusInput = (status: string): IValidationResponse => {
     // Check to see if status value is in list of acceptable values
     logger.info(`Validating status input: ${status}`);
     if (!v2Statuses.includes(status)) {
@@ -59,7 +59,7 @@ export default (logger: Logger, dbClient: DBClient): TaskValidator => {
     };
   };
 
-  const checkIfTaskExistsAndBelongsToUser = async (userId: number, taskId: number): Promise<ValidationResponse> => {
+  const checkIfTaskExistsAndBelongsToUser = async (userId: number, taskId: number): Promise<IValidationResponse> => {
     // Check if task exists
     logger.info(`Verifying that taskId-${taskId} exists`);
     const result = await dbClient.getTask(Number(taskId));

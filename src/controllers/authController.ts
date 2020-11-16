@@ -5,18 +5,18 @@ import { Request, Response } from 'express';
 import { DBClient } from '../db/dbClient';
 import getErrorHandler from '../utilities/errorHandler';
 
-export interface AuthController {
+interface IAuthController {
   register: (req: Request, res: Response) => void;
   login: (req: Request, res: Response) => void;
 }
 
-interface saltHash {
+interface ISaltHash {
   salt: string,
   hash: string
 }
 
 // Hashes the password with the salt and returns the pair
-const hashPassword = (password: string, saltValue: string): saltHash => {
+const hashPassword = (password: string, saltValue: string): ISaltHash => {
   const hash = crypto.createHmac('sha512', saltValue);
   hash.update(password);
   const hashValue = hash.digest('hex');
@@ -30,12 +30,12 @@ const hashPassword = (password: string, saltValue: string): saltHash => {
 const generateSalt = (length: number): string => crypto.randomBytes(length).toString('hex').slice(0, length);
 
 // Generates a random salt, hashes the input password with it, and returns the pair
-const saltHashPassword = (password: string): saltHash => {
+const saltHashPassword = (password: string): ISaltHash => {
   const saltValue = generateSalt(16);
   return hashPassword(password, saltValue);
 };
 
-export default (logger: Logger, dbClient: DBClient): AuthController => {
+export default (logger: Logger, dbClient: DBClient): IAuthController => {
   const errorHandler = getErrorHandler(logger);
   return {
     register: async (req, res) => {
