@@ -1,8 +1,9 @@
 # auth-task
-Registering credentials and logging in through the Auth Service will yield a token granting access to the Task Service. Access tokens expire an hour after provisioning.
+The Authentication Service handles username & password registration and login. Successful authorization results in a JWT token for the authorized client to use moving forward. The tokens expire after one hour.
 
+The Task Service allows authorized users to perform operations on their tasks.
 
-## Services
+## Routes
 * Authentication API
     * [Register](docs/registerContract.md)
         * `POST {{auth-endpoint}}/register`

@@ -22,8 +22,8 @@ Create a Task for the logged in user. Functionality DOES change between v1 and v
 {
 	"status" : "New",
 	"name" : "Documentation",
-    "description" : "Finish writing contract docs for the APIs",
-    "dueDate": "ASAP"
+	"description" : "Finish writing contract docs for the APIs",
+	"dueDate": "ASAP"
 }
 ```
 
