@@ -14,6 +14,7 @@ CREATE TABLE task (
     status VARCHAR(255),
     name VARCHAR(255),
     description VARCHAR(255),
+    due_date VARCHAR(255),
 
     CONSTRAINT fk_user_id
         FOREIGN KEY(owner_id)

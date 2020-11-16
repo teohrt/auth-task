@@ -46,12 +46,12 @@ exports.default = (function (logger, dbClient) {
     var errorHandler = errorHandler_1.default(logger);
     return {
         v1CreateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, userId, validatorResult, result, taskId, err_1;
+            var _a, status, name, description, dueDate, userId, validatorResult, result, taskId, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         logger.info('Task Controller: createTask');
-                        _a = req.body, status = _a.status, name = _a.name, description = _a.description;
+                        _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         userId = req.user.id;
                         try {
                             validatorResult = validator.v1ValidateCreateTask(status);
@@ -67,7 +67,7 @@ exports.default = (function (logger, dbClient) {
                     case 1:
                         _b.trys.push([1, 3, , 4]);
                         logger.info('Creating task');
-                        return [4 /*yield*/, dbClient.createTask(userId, status, name, description)];
+                        return [4 /*yield*/, dbClient.createTask(userId, status, name, description, dueDate)];
                     case 2:
                         result = _b.sent();
                         taskId = result.rows[0].id;
@@ -82,12 +82,12 @@ exports.default = (function (logger, dbClient) {
             });
         }); },
         v2CreateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, userId, validatorResult, result, taskId, err_2;
+            var _a, status, name, description, dueDate, userId, validatorResult, result, taskId, err_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         logger.info('Task Controller: createTask');
-                        _a = req.body, status = _a.status, name = _a.name, description = _a.description;
+                        _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         userId = req.user.id;
                         try {
                             validatorResult = validator.v2ValidateCreateTask(status);
@@ -103,7 +103,7 @@ exports.default = (function (logger, dbClient) {
                     case 1:
                         _b.trys.push([1, 3, , 4]);
                         logger.info('Creating task');
-                        return [4 /*yield*/, dbClient.createTask(userId, status, name, description)];
+                        return [4 /*yield*/, dbClient.createTask(userId, status, name, description, dueDate)];
                     case 2:
                         result = _b.sent();
                         taskId = result.rows[0].id;
@@ -181,12 +181,12 @@ exports.default = (function (logger, dbClient) {
             });
         }); },
         v1UpdateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, taskId, userId, validatorResult, err_6, err_7;
+            var _a, status, name, description, dueDate, taskId, userId, validatorResult, err_6, err_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         logger.info('Task Controller: updateTask');
-                        _a = req.body, status = _a.status, name = _a.name, description = _a.description;
+                        _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         taskId = req.params.taskId;
                         userId = req.user.id;
                         _b.label = 1;
@@ -206,7 +206,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 4:
                         _b.trys.push([4, 6, , 7]);
-                        return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description)];
+                        return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description, dueDate)];
                     case 5:
                         _b.sent();
                         res.status(200).send();
@@ -220,12 +220,12 @@ exports.default = (function (logger, dbClient) {
             });
         }); },
         v2UpdateTask: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-            var _a, status, name, description, taskId, userId, validatorResult, err_8, err_9;
+            var _a, status, name, description, dueDate, taskId, userId, validatorResult, err_8, err_9;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         logger.info('Task Controller: updateTask');
-                        _a = req.body, status = _a.status, name = _a.name, description = _a.description;
+                        _a = req.body, status = _a.status, name = _a.name, description = _a.description, dueDate = _a.dueDate;
                         taskId = req.params.taskId;
                         userId = req.user.id;
                         _b.label = 1;
@@ -245,7 +245,7 @@ exports.default = (function (logger, dbClient) {
                         return [3 /*break*/, 4];
                     case 4:
                         _b.trys.push([4, 6, , 7]);
-                        return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description)];
+                        return [4 /*yield*/, dbClient.updateTask(Number(taskId), status, name, description, dueDate)];
                     case 5:
                         _b.sent();
                         res.status(200).send();

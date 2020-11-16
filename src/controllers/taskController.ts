@@ -22,7 +22,9 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
   return {
     v1CreateTask: async (req, res) => {
       logger.info('Task Controller: createTask');
-      const { status, name, description } = req.body;
+      const {
+        status, name, description, dueDate,
+      } = req.body;
       const userId = req.user.id;
 
       try {
@@ -37,7 +39,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
 
       try {
         logger.info('Creating task');
-        const result = await dbClient.createTask(userId, status, name, description);
+        const result = await dbClient.createTask(userId, status, name, description, dueDate);
         const taskId = result.rows[0].id;
         res.status(201).send({ taskId });
       } catch (err) {
@@ -47,7 +49,9 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
 
     v2CreateTask: async (req, res) => {
       logger.info('Task Controller: createTask');
-      const { status, name, description } = req.body;
+      const {
+        status, name, description, dueDate,
+      } = req.body;
       const userId = req.user.id;
 
       try {
@@ -62,7 +66,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
 
       try {
         logger.info('Creating task');
-        const result = await dbClient.createTask(userId, status, name, description);
+        const result = await dbClient.createTask(userId, status, name, description, dueDate);
         const taskId = result.rows[0].id;
         res.status(201).send({ taskId });
       } catch (err) {
@@ -109,7 +113,9 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
 
     v1UpdateTask: async (req, res) => {
       logger.info('Task Controller: updateTask');
-      const { status, name, description } = req.body;
+      const {
+        status, name, description, dueDate,
+      } = req.body;
       const { taskId } = req.params;
       const userId = req.user.id;
 
@@ -124,7 +130,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
       }
 
       try {
-        await dbClient.updateTask(Number(taskId), status, name, description);
+        await dbClient.updateTask(Number(taskId), status, name, description, dueDate);
         res.status(200).send();
       } catch (err) {
         errorHandler.serverError(res, err);
@@ -133,7 +139,9 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
 
     v2UpdateTask: async (req, res) => {
       logger.info('Task Controller: updateTask');
-      const { status, name, description } = req.body;
+      const {
+        status, name, description, dueDate,
+      } = req.body;
       const { taskId } = req.params;
       const userId = req.user.id;
 
@@ -148,7 +156,7 @@ export default (logger: Logger, dbClient: DBClient): TaskController => {
       }
 
       try {
-        await dbClient.updateTask(Number(taskId), status, name, description);
+        await dbClient.updateTask(Number(taskId), status, name, description, dueDate);
         res.status(200).send();
       } catch (err) {
         errorHandler.serverError(res, err);

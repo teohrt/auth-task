@@ -97,9 +97,9 @@ exports.default = (function (logger) { return __awaiter(void 0, void 0, void 0, 
                                 return [2 /*return*/, dbQuery("\n    SELECT * FROM app_user\n    WHERE username = '" + username + "';\n    ")];
                             });
                         }); },
-                        createTask: function (ownerId, status, name, description) { return __awaiter(void 0, void 0, void 0, function () {
+                        createTask: function (ownerId, status, name, description, dueDate) { return __awaiter(void 0, void 0, void 0, function () {
                             return __generator(this, function (_a) {
-                                return [2 /*return*/, dbQuery("\n    INSERT INTO task(owner_id, status, name, description)\n    VALUES (" + ownerId + ", '" + status + "', '" + name + "', '" + description + "')\n    RETURNING id;\n    ")];
+                                return [2 /*return*/, dbQuery("\n    INSERT INTO task(owner_id, status, name, description, due_date)\n    VALUES (" + ownerId + ", '" + status + "', '" + name + "', '" + description + "', '" + dueDate + "')\n    RETURNING id;\n    ")];
                             });
                         }); },
                         getAllTasksFromUser: function (ownerId) { return __awaiter(void 0, void 0, void 0, function () {
@@ -112,9 +112,9 @@ exports.default = (function (logger) { return __awaiter(void 0, void 0, void 0, 
                                 return [2 /*return*/, dbQuery("\n    SELECT * FROM task\n    WHERE id = " + taskId + ";\n    ")];
                             });
                         }); },
-                        updateTask: function (taskId, status, name, description) { return __awaiter(void 0, void 0, void 0, function () {
+                        updateTask: function (taskId, status, name, description, dueDate) { return __awaiter(void 0, void 0, void 0, function () {
                             return __generator(this, function (_a) {
-                                return [2 /*return*/, dbQuery("\n    UPDATE task\n    SET   status = '" + status + "',\n          name = '" + name + "',\n          description = '" + description + "'\n    WHERE id = " + taskId + ";\n    ")];
+                                return [2 /*return*/, dbQuery("\n    UPDATE task\n    SET   status = '" + status + "',\n          name = '" + name + "',\n          description = '" + description + "',\n          due_date = '" + dueDate + "'\n    WHERE id = " + taskId + ";\n    ")];
                             });
                         }); },
                         deleteTask: function (taskId) { return __awaiter(void 0, void 0, void 0, function () {

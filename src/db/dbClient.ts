@@ -5,10 +5,10 @@ import { Logger } from 'winston';
 export interface DBClient {
   createUser: (username: string, passwordHash: string, salt: string) => Promise<QueryResult>;
   getUserByName: (username: string) => Promise<QueryResult>;
-  createTask: (ownerId: number, status: string, name: string, description: string) => Promise<QueryResult>;
+  createTask: (ownerId: number, status: string, name: string, description: string, dueDate: string) => Promise<QueryResult>;
   getAllTasksFromUser: (id: number) => Promise<QueryResult>;
   getTask: (taskId: number) => Promise<QueryResult>;
-  updateTask: (taskId: number, status: string, name: string, description: string) => Promise<QueryResult>;
+  updateTask: (taskId: number, status: string, name: string, description: string, dueDate: string) => Promise<QueryResult>;
   deleteTask: (taskId: number) => Promise<QueryResult>;
 }
 
@@ -57,9 +57,9 @@ export default async (logger: Logger): Promise<DBClient> => {
     WHERE username = '${username}';
     `),
 
-    createTask: async (ownerId, status, name, description) => dbQuery(`
-    INSERT INTO task(owner_id, status, name, description)
-    VALUES (${ownerId}, '${status}', '${name}', '${description}')
+    createTask: async (ownerId, status, name, description, dueDate) => dbQuery(`
+    INSERT INTO task(owner_id, status, name, description, due_date)
+    VALUES (${ownerId}, '${status}', '${name}', '${description}', '${dueDate}')
     RETURNING id;
     `),
 
@@ -73,11 +73,12 @@ export default async (logger: Logger): Promise<DBClient> => {
     WHERE id = ${taskId};
     `),
 
-    updateTask: async (taskId, status, name, description) => dbQuery(`
+    updateTask: async (taskId, status, name, description, dueDate) => dbQuery(`
     UPDATE task
     SET   status = '${status}',
           name = '${name}',
-          description = '${description}'
+          description = '${description}',
+          due_date = '${dueDate}'
     WHERE id = ${taskId};
     `),
 
