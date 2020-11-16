@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Client, QueryResult } from 'pg';
+import { Pool, QueryResult, PoolClient } from 'pg';
 import { Logger } from 'winston';
 
 export interface DBClient {
@@ -12,8 +12,8 @@ export interface DBClient {
   deleteTask: (taskId: number) => Promise<QueryResult>;
 }
 
-export default (logger: Logger): DBClient => {
-  const client = new Client({
+export default async (logger: Logger): Promise<DBClient> => {
+  const pool = new Pool({
     host: process.env.PGHOST,
     port: Number(process.env.PGPORT),
     database: process.env.PGDATABASE,
@@ -21,17 +21,13 @@ export default (logger: Logger): DBClient => {
     password: process.env.PGPASSWORD,
   });
 
-  client.connect((err: Error) => {
-    if (err) {
-      logger.error(`DB connection error: ${err.stack}`);
-    } else {
-      logger.info('DB connected');
-    }
-  });
-
-  client.on('error', (err: Error) => {
-    logger.error(`Error with DB: ${err.stack}`);
-  });
+  let client: PoolClient;
+  try {
+    client = await pool.connect();
+    logger.info('DB Connected');
+  } catch (err) {
+    logger.error(`DB connection error: ${err.stack}`);
+  }
 
   const dbQuery = async (queryString: string): Promise<QueryResult> => {
     try {
@@ -45,8 +41,7 @@ export default (logger: Logger): DBClient => {
         });
       });
     } catch (err) {
-      logger.error(err);
-      return null as any;
+      return err as any;
     }
   };
 

@@ -60,10 +60,11 @@ var saltHashPassword = function (password) {
 };
 exports.default = (function (logger, dbClient) { return ({
     register: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, username, password, userResponse, msg, _b, salt, hash;
+        var _a, username, password, userResponse, msg, _b, salt, hash, err_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
+                    _c.trys.push([0, 3, , 4]);
                     logger.info('AuthController: Attempting registration');
                     _a = req.body, username = _a.username, password = _a.password;
                     return [4 /*yield*/, dbClient.getUserByName(username)];
@@ -83,15 +84,22 @@ exports.default = (function (logger, dbClient) { return ({
                 case 2:
                     _c.sent();
                     res.send('User Registered!');
-                    return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_1 = _c.sent();
+                    logger.error(err_1);
+                    res.status(500).send({ error: 'Server error' });
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     }); },
     login: function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, username, password, userResponse, msg, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg;
+        var _a, username, password, userResponse, msg, user, storedHash, storedSalt, storedId, hash, loginSuccessful, accessToken, msg, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
+                    _b.trys.push([0, 2, , 3]);
                     logger.info('AuthController: Attempting login');
                     _a = req.body, username = _a.username, password = _a.password;
                     return [4 /*yield*/, dbClient.getUserByName(username)];
@@ -127,7 +135,13 @@ exports.default = (function (logger, dbClient) { return ({
                             res.send(msg);
                         }
                     }
-                    return [2 /*return*/];
+                    return [3 /*break*/, 3];
+                case 2:
+                    err_2 = _b.sent();
+                    logger.error(err_2);
+                    res.status(500).send({ error: 'Server error' });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
         });
     }); },
