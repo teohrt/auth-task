@@ -68,7 +68,7 @@ exports.default = (function (logger, dbClient) {
         // Check to see if status value is in list of acceptable values
         logger.info("Validating status input: " + status);
         if (!v2Statuses.includes(status)) {
-            var msg = 'Status may only be \'New\' or \'Completed\'';
+            var msg = 'Status may only be \'New\', \'In Progress\' or \'Completed\'';
             logger.info("Validation failed: " + msg);
             return {
                 isValid: false,

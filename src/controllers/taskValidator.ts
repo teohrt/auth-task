@@ -44,7 +44,7 @@ export default (logger: Logger, dbClient: DBClient): ITaskValidator => {
     // Check to see if status value is in list of acceptable values
     logger.info(`Validating status input: ${status}`);
     if (!v2Statuses.includes(status)) {
-      const msg = 'Status may only be \'New\' or \'Completed\'';
+      const msg = 'Status may only be \'New\', \'In Progress\' or \'Completed\'';
       logger.info(`Validation failed: ${msg}`);
       return {
         isValid: false,
