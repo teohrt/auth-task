@@ -83,6 +83,6 @@ OR
 **Content example**
 ```json
 {
-    "errMsg": "Server error"
+    "message": "Internal server error"
 }
 ```

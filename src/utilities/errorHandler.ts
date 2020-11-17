@@ -7,8 +7,8 @@ export interface IServerError {
 
 export default (logger: Logger): IServerError => ({
   serverError: (res, err) => {
-    const errMsg = 'Server error';
-    logger.error(errMsg);
-    res.status(500).send({ errMsg });
+    const message = 'Internal server error';
+    logger.error(message);
+    res.status(500).send({ message });
   },
 });
