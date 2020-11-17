@@ -1,6 +1,6 @@
 [Back](../README.md)
 
-# Create Task
+# Update Task
 
 Update a specified Task. The Task must have been created by the logged in user. Functionality DOES change between v1 and v2 routes.
 
@@ -20,8 +20,8 @@ Update a specified Task. The Task must have been created by the logged in user. 
 
 ```json
 {
-	"status" : "In Progress",
-	"name" : "Documentation",
+    "status" : "In Progress",
+    "name" : "Documentation",
     "description" : "Finish writing contract docs for the APIs",
     "dueDate": "ASAP"
 }
